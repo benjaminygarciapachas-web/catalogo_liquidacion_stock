@@ -137,7 +137,7 @@ server.on('error', (err) => {
 
 server.listen(currentPort, '0.0.0.0', () => {
   console.log('========================================================');
-  console.log(`🚀 SERVIDOR CATALOGO CALZADO DAMA CORRIENDO EN: http://0.0.0.0:${currentPort}`);
+  console.log(`🚀 SERVIDOR CATALOGO LIQUIDACION STOCK CORRIENDO EN: http://0.0.0.0:${currentPort}`);
   console.log(`☁️ ALMACENAMIENTO PERMANENTE EN NUBE: Cloudinary (hvoicb7h)`);
   console.log(`👑 ADMIN CREDENCIALES: Usuario "${ADMIN_USER_LOG}" | Clave "${ADMIN_PASS_LOG}"`);
   console.log('========================================================');
