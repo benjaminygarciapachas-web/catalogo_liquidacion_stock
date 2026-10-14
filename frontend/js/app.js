@@ -166,32 +166,18 @@ function initEventListeners() {
       tabLoginCliente.classList.add('active');
       tabLoginAdmin.classList.remove('active');
       usernameInput.placeholder = 'Tu nombre de usuario';
-      if (usernameInput.value === 'PATTYps') {
-        usernameInput.value = '';
-      }
+      usernameInput.value = '';
       passwordInput.value = '';
+      if (usernameInput) usernameInput.focus();
     });
 
     tabLoginAdmin.addEventListener('click', () => {
       tabLoginAdmin.classList.add('active');
       tabLoginCliente.classList.remove('active');
       usernameInput.placeholder = 'Usuario de Administrador';
-      usernameInput.value = 'PATTYps';
-      passwordInput.value = 'PATTYpschincha452416';
-      if (passwordInput) passwordInput.focus();
-    });
-  }
-
-  // Botón para autorrellenar credenciales del Admin
-  const btnFillAdmin = document.getElementById('btnFillAdminCredentials');
-  if (btnFillAdmin) {
-    btnFillAdmin.addEventListener('click', () => {
-      usernameInput.value = 'PATTYps';
-      passwordInput.value = 'PATTYpschincha452416';
-      tabLoginAdmin.classList.add('active');
-      tabLoginCliente.classList.remove('active');
-      usernameInput.placeholder = 'Usuario de Administrador';
-      handleLoginSubmit(new Event('submit'));
+      usernameInput.value = '';
+      passwordInput.value = '';
+      if (usernameInput) usernameInput.focus();
     });
   }
 
@@ -672,7 +658,13 @@ function openProductDetail(productId) {
 // ==========================================================================
 function openLoginModal() {
   const modal = document.getElementById('loginModalOverlay');
-  if (modal) modal.classList.remove('hidden');
+  if (modal) {
+    modal.classList.remove('hidden');
+    const usernameInput = document.getElementById('loginUsernameInput');
+    const passwordInput = document.getElementById('loginPasswordInput');
+    if (usernameInput) usernameInput.value = '';
+    if (passwordInput) passwordInput.value = '';
+  }
 }
 
 function closeLoginModal() {
