@@ -148,53 +148,53 @@
         <span>Todo el Stock</span>
       </button>
 
-      <button class="cat-tab" data-category="marca" id="tabCategoryMarca">
-        <span class="cat-tab-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-        </span>
-        <span>Stock de Marca</span>
-      </button>
-
-      <button class="cat-tab" data-category="normal" id="tabCategoryNormal">
+      <button class="cat-tab" data-category="ropa" id="tabCategoryRopa">
         <span class="cat-tab-icon">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10a2 2 0 002 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"/></svg>
         </span>
-        <span>Stock Normal</span>
+        <span>Ropa</span>
+      </button>
+
+      <button class="cat-tab" data-category="calzado" id="tabCategoryCalzado">
+        <span class="cat-tab-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3.5 13h6l3-4h6l2 4v4H3.5v-4z"/><circle cx="7.5" cy="17" r="1.5"/></svg>
+        </span>
+        <span>Calzado</span>
+      </button>
+
+      <button class="cat-tab" data-category="electronicos" id="tabCategoryElectronicos">
+        <span class="cat-tab-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg>
+        </span>
+        <span>Electrónicos</span>
+      </button>
+
+      <button class="cat-tab" data-category="variados" id="tabCategoryVariados">
+        <span class="cat-tab-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+        </span>
+        <span>Variados</span>
+      </button>
+
+      <button class="cat-tab" data-category="edredones" id="tabCategoryEdredones">
+        <span class="cat-tab-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/></svg>
+        </span>
+        <span>Edredones</span>
       </button>
     </nav>
 
-    <!-- Subcategorías Dinámicas Exactas -->
-    <section class="subcategories-container" id="subcategoriesSection">
-      <div class="subcat-group-row" id="subcatGroupCalzado">
-        
-        <!-- Grupo MARCA -->
-        <div class="subcat-group-block" id="subcatGroupMarca">
+    <!-- Subcategorías Dinámicas (Solo se muestran para Ropa y Calzado: Dama, Caballeros, Niños) -->
+    <section class="subcategories-container hidden" id="subcategoriesSection">
+      <div class="subcat-group-row">
+        <div class="subcat-group-block">
           <div class="subcat-group-header">
-            <span class="badge-group-title badge-fucsia">Marca</span>
+            <span class="badge-group-title badge-fucsia" id="subcatGroupTitleBadge">Subcategorías</span>
           </div>
-          <div class="subcat-pills-list">
-            <button class="subcat-pill" data-subcat-slug="zapatillas-de-marca">zapatillas de marca</button>
+          <div class="subcat-pills-list" id="subcatPillsList">
+            <!-- Píldoras inyectadas dinámicamente según la categoría activa -->
           </div>
         </div>
-
-        <!-- Grupo NORMAL -->
-        <div class="subcat-group-block" id="subcatGroupNormal">
-          <div class="subcat-group-header">
-            <span class="badge-group-title badge-celeste">Normal</span>
-          </div>
-          <div class="subcat-pills-list">
-            <button class="subcat-pill" data-subcat-slug="sandalias">sandalias</button>
-            <button class="subcat-pill" data-subcat-slug="balerinas-flats">balerinas flats</button>
-            <button class="subcat-pill" data-subcat-slug="cunas">cuñas</button>
-            <button class="subcat-pill" data-subcat-slug="botas-largas">botas largas</button>
-            <button class="subcat-pill" data-subcat-slug="botines">botines</button>
-            <button class="subcat-pill" data-subcat-slug="taco-3-a-5">taco 3 a 5</button>
-            <button class="subcat-pill" data-subcat-slug="taco-7-a-9">taco 7 a 9</button>
-            <button class="subcat-pill" data-subcat-slug="taco-12-a-mas">taco 12 a mas</button>
-            <button class="subcat-pill" data-subcat-slug="zapatillas">zapatillas</button>
-          </div>
-        </div>
-
       </div>
     </section>
 
@@ -327,48 +327,53 @@
           <div class="form-group col-span-2">
             <label for="prodTitleInput">Título del Producto</label>
             <input type="text" id="prodTitleInput" placeholder="Ej: Camisa Slim Fit Manga Larga (Opcional)">
-            <span class="field-hint">Nombre o título de la prenda (Opcional).</span>
+            <span class="field-hint">Nombre o título del producto (Opcional).</span>
           </div>
 
           <!-- Código del Producto (SKU / Referencia) -->
           <div class="form-group col-span-2">
-            <label for="prodCodeInput">Código de la Prenda (Código / SKU)</label>
+            <label for="prodCodeInput">Código del Producto (SKU / Referencia)</label>
             <input type="text" id="prodCodeInput" placeholder="Ej: COD-101, REF-M45... (Opcional)" maxlength="60">
-            <span class="field-hint">Código para identificar la prenda en el catálogo.</span>
+            <span class="field-hint">Código para identificar el producto en el catálogo.</span>
           </div>
 
           <!-- Categoría -->
           <div class="form-group">
             <label for="prodCategorySelect">Categoría</label>
             <select id="prodCategorySelect">
-              <option value="1">Calzado</option>
+              <option value="1">Ropa</option>
+              <option value="2">Calzado</option>
+              <option value="3">Electrónicos</option>
+              <option value="4">Variados</option>
+              <option value="5">Edredones</option>
             </select>
           </div>
 
           <!-- Subcategoría -->
-          <div class="form-group">
+          <div class="form-group" id="prodSubcategoryGroup">
             <label for="prodSubcategorySelect">Subcategoría</label>
             <select id="prodSubcategorySelect">
               <!-- Llenado dinámico -->
             </select>
+            <span class="field-hint" id="prodSubcatHint">Dama, Caballeros o Niños</span>
           </div>
 
           <!-- Tallas -->
           <div class="form-group col-span-2">
-            <label for="prodSizesInput">Tallas Disponibles</label>
-            <input type="text" id="prodSizesInput" placeholder="Ej: S, M, L, XL ó 40, 41, 42 (Opcional)">
+            <label for="prodSizesInput">Tallas / Medidas Disponibles</label>
+            <input type="text" id="prodSizesInput" placeholder="Ej: S, M, L, XL ó 40, 41, 42 ó 2 Plazas... (Opcional)">
           </div>
 
           <!-- Descripción -->
           <div class="form-group col-span-2">
             <label for="prodDescInput">Descripción</label>
-            <textarea id="prodDescInput" rows="3" placeholder="Detalles de la prenda... (Opcional)"></textarea>
+            <textarea id="prodDescInput" rows="3" placeholder="Detalles del producto... (Opcional)"></textarea>
           </div>
 
           <!-- Subida Local de Fotos (Hasta 50 Fotos por Publicación - PROHIBIDO CLOUDINARY) -->
           <div class="form-group col-span-2">
             <div class="upload-section-header">
-              <label>Fotografías de la Prenda (Hasta 50 fotos por publicación)</label>
+              <label>Fotografías del Producto (Hasta 50 fotos por publicación)</label>
               <span class="photos-count-chip" id="photosCountChip">📷 0 / 50 fotos</span>
             </div>
 

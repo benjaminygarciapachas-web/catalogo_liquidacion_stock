@@ -27,11 +27,11 @@ const ProductModel = {
     let sql = `
       SELECT 
         p.*,
-        COALESCE(c.name, 'Ropa') as categoria_name,
-        COALESCE(c.slug, 'ropa') as categoria_slug,
-        COALESCE(sc.name, 'General') as subcategoria_name,
-        COALESCE(sc.slug, 'general') as subcategoria_slug,
-        COALESCE(sc.tipo_grupo, 'Normal') as subcategoria_grupo
+        COALESCE(c.name, 'General') as categoria_name,
+        COALESCE(c.slug, 'general') as categoria_slug,
+        COALESCE(sc.name, '') as subcategoria_name,
+        COALESCE(sc.slug, '') as subcategoria_slug,
+        COALESCE(sc.tipo_grupo, '') as subcategoria_grupo
       FROM productos p
       LEFT JOIN categorias c ON p.categoria_id = c.id
       LEFT JOIN subcategorias sc ON p.subcategoria_id = sc.id
@@ -80,11 +80,11 @@ const ProductModel = {
     const sql = `
       SELECT 
         p.*,
-        COALESCE(c.name, 'Ropa') as categoria_name,
-        COALESCE(c.slug, 'ropa') as categoria_slug,
-        COALESCE(sc.name, 'General') as subcategoria_name,
-        COALESCE(sc.slug, 'general') as subcategoria_slug,
-        COALESCE(sc.tipo_grupo, 'Normal') as subcategoria_grupo
+        COALESCE(c.name, 'General') as categoria_name,
+        COALESCE(c.slug, 'general') as categoria_slug,
+        COALESCE(sc.name, '') as subcategoria_name,
+        COALESCE(sc.slug, '') as subcategoria_slug,
+        COALESCE(sc.tipo_grupo, '') as subcategoria_grupo
       FROM productos p
       LEFT JOIN categorias c ON p.categoria_id = c.id
       LEFT JOIN subcategorias sc ON p.subcategoria_id = sc.id
@@ -97,11 +97,11 @@ const ProductModel = {
   create({ code, title, description, price, original_price, image_url, images, categoria_id, subcategoria_id, sizes, stock, badge }) {
     const imagesStr = Array.isArray(images) ? JSON.stringify(images) : (images || JSON.stringify([image_url]));
     const cleanCode = code ? String(code).trim() : null;
-    const finalTitle = title ? String(title).trim() : (cleanCode ? `Prenda ${cleanCode}` : 'Prenda');
+    const finalTitle = title ? String(title).trim() : (cleanCode ? `Producto ${cleanCode}` : 'Producto');
     const finalPrice = (price !== undefined && price !== '' && !isNaN(Number(price))) ? Number(price) : 0;
     const finalOriginalPrice = (original_price !== undefined && original_price !== '' && !isNaN(Number(original_price))) ? Number(original_price) : null;
     const finalCat = categoria_id ? Number(categoria_id) : 1;
-    const finalSubcat = subcategoria_id ? Number(subcategoria_id) : 1;
+    const finalSubcat = (subcategoria_id && Number(subcategoria_id) > 0) ? Number(subcategoria_id) : null;
 
     const sql = `
       INSERT INTO productos (code, title, description, price, original_price, image_url, images, categoria_id, subcategoria_id, sizes, stock, badge, created_at, updated_at)
@@ -131,7 +131,7 @@ const ProductModel = {
 
     const cleanCode = code !== undefined ? (code ? String(code).trim() : null) : existing.code;
     const finalTitle = title !== undefined 
-      ? (title ? String(title).trim() : (cleanCode ? `Prenda ${cleanCode}` : existing.title))
+      ? (title ? String(title).trim() : (cleanCode ? `Producto ${cleanCode}` : existing.title))
       : existing.title;
     const finalPrice = price !== undefined
       ? ((price !== '' && !isNaN(Number(price))) ? Number(price) : existing.price)
@@ -143,6 +143,10 @@ const ProductModel = {
     const finalImagesStr = images !== undefined 
       ? (Array.isArray(images) ? JSON.stringify(images) : images)
       : (existing.images ? JSON.stringify(existing.images) : JSON.stringify([existing.image_url]));
+
+    const finalSubcat = subcategoria_id !== undefined 
+      ? ((subcategoria_id && Number(subcategoria_id) > 0) ? Number(subcategoria_id) : null) 
+      : existing.subcategoria_id;
 
     const sql = `
       UPDATE productos
@@ -171,7 +175,7 @@ const ProductModel = {
       image_url !== undefined ? image_url : existing.image_url,
       finalImagesStr,
       categoria_id !== undefined ? Number(categoria_id) : existing.categoria_id,
-      subcategoria_id !== undefined ? Number(subcategoria_id) : existing.subcategoria_id,
+      finalSubcat,
       sizes !== undefined ? sizes : existing.sizes,
       stock !== undefined ? Number(stock) : existing.stock,
       badge !== undefined ? badge : existing.badge,
@@ -197,6 +201,8 @@ const ProductModel = {
         ? JSON.stringify(p.images) 
         : (p.images || JSON.stringify([p.image_url]));
 
+      const subcatId = (p.subcategoria_id && Number(p.subcategoria_id) > 0) ? Number(p.subcategoria_id) : null;
+
       if (existing) {
         const sql = `
           UPDATE productos
@@ -208,14 +214,14 @@ const ProductModel = {
         try {
           db.run(sql, [
             p.code || null,
-            p.title || 'Prenda',
+            p.title || 'Producto',
             p.description || '',
             p.price !== undefined ? Number(p.price) : 0,
             p.original_price !== undefined ? Number(p.original_price) : null,
             p.image_url || '',
             imagesStr,
             p.categoria_id ? Number(p.categoria_id) : 1,
-            p.subcategoria_id ? Number(p.subcategoria_id) : 1,
+            subcatId,
             p.sizes || 'Estándar',
             p.stock !== undefined ? Number(p.stock) : 999,
             p.badge || null,
@@ -234,14 +240,14 @@ const ProductModel = {
           db.run(sql, [
             p.id || null,
             p.code || null,
-            p.title || 'Prenda',
+            p.title || 'Producto',
             p.description || '',
             p.price !== undefined ? Number(p.price) : 0,
             p.original_price !== undefined ? Number(p.original_price) : null,
             p.image_url || '',
             imagesStr,
             p.categoria_id ? Number(p.categoria_id) : 1,
-            p.subcategoria_id ? Number(p.subcategoria_id) : 1,
+            subcatId,
             p.sizes || 'Estándar',
             p.stock !== undefined ? Number(p.stock) : 999,
             p.badge || null,

@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS productos (
     image_url TEXT NOT NULL,
     images TEXT, -- Lista JSON de fotos (hasta 50 por producto)
     categoria_id INTEGER NOT NULL,
-    subcategoria_id INTEGER NOT NULL,
+    subcategoria_id INTEGER,
     sizes VARCHAR(100) DEFAULT 'S, M, L, XL',
     stock INTEGER DEFAULT 10,
     badge VARCHAR(50), -- e.g. 'Nuevo', 'Exclusivo', 'Oferta'

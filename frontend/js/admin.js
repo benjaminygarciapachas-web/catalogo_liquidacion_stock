@@ -86,37 +86,38 @@ const AdminModule = {
     }
   },
 
-  // Poblar select de subcategorías agrupadas estrictamente
+  // Poblar select de subcategorías según la categoría seleccionada
   populateSubcategoriesSelect(categoryId, selectedSubcatId = null) {
     const select = document.getElementById('prodSubcategorySelect');
+    const group = document.getElementById('prodSubcategoryGroup');
     if (!select) return;
 
     select.innerHTML = '';
-    const filtered = this.allSubcategories.filter(sc => !categoryId || sc.categoria_id === categoryId);
+    const catIdNum = Number(categoryId) || 1;
+    const filtered = this.allSubcategories.filter(sc => sc.categoria_id === catIdNum);
 
-    // ROPA: Dividida en 'Marca' y 'Normal'
-    const marcaGroup = document.createElement('optgroup');
-    marcaGroup.label = 'Marca';
-    const normalGroup = document.createElement('optgroup');
-    normalGroup.label = 'Normal';
+    if (filtered.length === 0) {
+      // Categorías sin subcategorías (Electrónicos, Variados, Edredones)
+      const opt = document.createElement('option');
+      opt.value = '';
+      opt.textContent = 'Sin subcategoría (General)';
+      select.appendChild(opt);
+      if (group) group.classList.add('hidden');
+      return;
+    }
+
+    // Mostrar campo de subcategoría para Ropa y Calzado
+    if (group) group.classList.remove('hidden');
 
     filtered.forEach(sc => {
       const opt = document.createElement('option');
       opt.value = sc.id;
-      opt.textContent = sc.name;
+      opt.textContent = sc.name; // Dama, Caballeros, Niños
       if (selectedSubcatId && Number(selectedSubcatId) === sc.id) {
         opt.selected = true;
       }
-
-      if (sc.tipo_grupo === 'Marca' || sc.tipo_grupo === 'Marcas') {
-        marcaGroup.appendChild(opt);
-      } else {
-        normalGroup.appendChild(opt);
-      }
+      select.appendChild(opt);
     });
-
-    if (marcaGroup.children.length > 0) select.appendChild(marcaGroup);
-    if (normalGroup.children.length > 0) select.appendChild(normalGroup);
   },
 
   // ==========================================================================
@@ -369,14 +370,14 @@ const AdminModule = {
     const descInput = document.getElementById('prodDescInput');
 
     const catVal = catSelect ? catSelect.value : '1';
-    const subcatVal = subcatSelect ? subcatSelect.value : '1';
+    const subcatVal = subcatSelect ? subcatSelect.value : '';
     const sizesVal = sizesInput ? sizesInput.value.trim() : '';
     const descVal = descInput ? descInput.value.trim() : '';
 
     formData.append('code', codeVal);
-    formData.append('title', titleVal || (codeVal ? `Prenda ${codeVal}` : 'Prenda'));
+    formData.append('title', titleVal || (codeVal ? `Producto ${codeVal}` : 'Producto'));
     formData.append('categoria_id', catVal);
-    formData.append('subcategoria_id', subcatVal);
+    formData.append('subcategoria_id', subcatVal || '');
     formData.append('price', '0');
     formData.append('original_price', '');
     formData.append('sizes', sizesVal || 'Estándar');

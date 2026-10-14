@@ -41,31 +41,33 @@ if (!adminExisting) {
   console.log('👑 Usuario Administrador creado: PATTYps');
 }
 
-// 3. Categorías (Calzado como única y principal)
+// 3. Categorías Principales solicitadas: Ropa, Calzado, Electrónicos, Variados, Edredones
 db.exec(`
+  DELETE FROM subcategorias;
   DELETE FROM categorias;
-  INSERT OR IGNORE INTO categorias (id, name, slug, icon) VALUES
-  (1, 'Calzado', 'calzado', 'shoe');
-  UPDATE categorias SET name = 'Calzado', slug = 'calzado', icon = 'shoe' WHERE id = 1;
+
+  INSERT INTO categorias (id, name, slug, icon) VALUES
+  (1, 'Ropa', 'ropa', 'shirt'),
+  (2, 'Calzado', 'calzado', 'shoe'),
+  (3, 'Electrónicos', 'electronicos', 'tv'),
+  (4, 'Variados', 'variados', 'box'),
+  (5, 'Edredones', 'edredones', 'bed');
 `);
 
-// 4. Subcategorías Exactas (Marca y Normal)
+// 4. Subcategorías:
+// - Ropa: Dama, Caballeros, Niños
+// - Calzado: Dama, Caballeros, Niños
+// - Electrónicos, Variados y Edredones: SIN subcategorías
 const subcats = [
-  // Marca
-  { id: 1, categoria_id: 1, tipo_grupo: 'Marca', name: 'zapatillas de marca', slug: 'zapatillas-de-marca' },
-  // Normal
-  { id: 2, categoria_id: 1, tipo_grupo: 'Normal', name: 'sandalias', slug: 'sandalias' },
-  { id: 3, categoria_id: 1, tipo_grupo: 'Normal', name: 'balerinas flats', slug: 'balerinas-flats' },
-  { id: 4, categoria_id: 1, tipo_grupo: 'Normal', name: 'cuñas', slug: 'cunas' },
-  { id: 5, categoria_id: 1, tipo_grupo: 'Normal', name: 'botas largas', slug: 'botas-largas' },
-  { id: 6, categoria_id: 1, tipo_grupo: 'Normal', name: 'botines', slug: 'botines' },
-  { id: 7, categoria_id: 1, tipo_grupo: 'Normal', name: 'taco 3 a 5', slug: 'taco-3-a-5' },
-  { id: 8, categoria_id: 1, tipo_grupo: 'Normal', name: 'taco 7 a 9', slug: 'taco-7-a-9' },
-  { id: 9, categoria_id: 1, tipo_grupo: 'Normal', name: 'taco 12 a mas', slug: 'taco-12-a-mas' },
-  { id: 10, categoria_id: 1, tipo_grupo: 'Normal', name: 'zapatillas', slug: 'zapatillas' }
+  // Ropa
+  { id: 1, categoria_id: 1, tipo_grupo: 'Dama', name: 'Dama', slug: 'ropa-dama' },
+  { id: 2, categoria_id: 1, tipo_grupo: 'Caballeros', name: 'Caballeros', slug: 'ropa-caballeros' },
+  { id: 3, categoria_id: 1, tipo_grupo: 'Niños', name: 'Niños', slug: 'ropa-ninos' },
+  // Calzado
+  { id: 4, categoria_id: 2, tipo_grupo: 'Dama', name: 'Dama', slug: 'calzado-dama' },
+  { id: 5, categoria_id: 2, tipo_grupo: 'Caballeros', name: 'Caballeros', slug: 'calzado-caballeros' },
+  { id: 6, categoria_id: 2, tipo_grupo: 'Niños', name: 'Niños', slug: 'calzado-ninos' }
 ];
-
-db.exec(`DELETE FROM subcategorias;`);
 
 const insertSubcat = db.prepare(`
   INSERT OR REPLACE INTO subcategorias (id, categoria_id, tipo_grupo, name, slug)

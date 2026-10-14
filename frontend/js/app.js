@@ -253,31 +253,61 @@ function initEventListeners() {
 }
 
 // ==========================================================================
-// CAMBIO DE CATEGORÍAS PRINCIPALES (Toda la Ropa / Marca / Normal)
+// CAMBIO DE CATEGORÍAS PRINCIPALES Y SUBCATEGORÍAS DINÁMICAS
 // ==========================================================================
-function switchCategoryTab(category) {
-  AppState.activeCategory = category;
+function switchCategoryTab(categorySlug) {
+  AppState.activeCategory = categorySlug;
   AppState.activeSubcategorySlug = null;
 
-  // Limpiar selección de subcategorías
-  document.querySelectorAll('.subcat-pill').forEach(p => p.classList.remove('active'));
+  renderSubcategoryPills(categorySlug);
+  applyFilters();
+}
 
-  const groupMarca = document.getElementById('subcatGroupMarca');
-  const groupNormal = document.getElementById('subcatGroupNormal');
+function renderSubcategoryPills(categorySlug) {
+  const section = document.getElementById('subcategoriesSection');
+  const container = document.getElementById('subcatPillsList');
+  const titleBadge = document.getElementById('subcatGroupTitleBadge');
+  if (!section || !container) return;
 
-  if (category === 'marca') {
-    if (groupMarca) groupMarca.classList.remove('hidden');
-    if (groupNormal) groupNormal.classList.add('hidden');
-  } else if (category === 'normal') {
-    if (groupMarca) groupMarca.classList.add('hidden');
-    if (groupNormal) groupNormal.classList.remove('hidden');
-  } else {
-    // Todos / Toda la Ropa
-    if (groupMarca) groupMarca.classList.remove('hidden');
-    if (groupNormal) groupNormal.classList.remove('hidden');
+  // Si es 'all' o categorías sin subcategorías (Electrónicos, Variados, Edredones)
+  if (categorySlug === 'all' || categorySlug === 'electronicos' || categorySlug === 'variados' || categorySlug === 'edredones') {
+    section.classList.add('hidden');
+    container.innerHTML = '';
+    return;
   }
 
-  applyFilters();
+  // Filtrar subcategorías de la categoría activa desde AppState.categories
+  const currentCat = AppState.categories.find(c => c.slug === categorySlug);
+  if (!currentCat || !currentCat.subcategories || currentCat.subcategories.length === 0) {
+    section.classList.add('hidden');
+    container.innerHTML = '';
+    return;
+  }
+
+  if (titleBadge) {
+    titleBadge.textContent = `${currentCat.name}: Subcategorías`;
+  }
+
+  section.classList.remove('hidden');
+  container.innerHTML = currentCat.subcategories.map(sc => `
+    <button class="subcat-pill" data-subcat-slug="${sc.slug}">${escapeHtml(sc.name)}</button>
+  `).join('');
+
+  // Asociar evento click a cada píldora dinámica (Dama, Caballeros, Niños)
+  container.querySelectorAll('.subcat-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      const slug = pill.getAttribute('data-subcat-slug');
+      if (AppState.activeSubcategorySlug === slug) {
+        AppState.activeSubcategorySlug = null;
+        pill.classList.remove('active');
+      } else {
+        container.querySelectorAll('.subcat-pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        AppState.activeSubcategorySlug = slug;
+      }
+      applyFilters();
+    });
+  });
 }
 
 function resetAllFilters() {
@@ -294,12 +324,8 @@ function resetAllFilters() {
   const tabAll = document.getElementById('tabCategoryAll');
   if (tabAll) tabAll.classList.add('active');
 
-  document.querySelectorAll('.subcat-pill').forEach(p => p.classList.remove('active'));
-
-  const groupMarca = document.getElementById('subcatGroupMarca');
-  const groupNormal = document.getElementById('subcatGroupNormal');
-  if (groupMarca) groupMarca.classList.remove('hidden');
-  if (groupNormal) groupNormal.classList.remove('hidden');
+  const section = document.getElementById('subcategoriesSection');
+  if (section) section.classList.add('hidden');
 
   applyFilters();
 }
@@ -344,27 +370,26 @@ async function loadProducts() {
 function applyFilters() {
   let list = [...AppState.products];
 
-  // 1. Filtro por categoría principal (Toda la Ropa / Marca / Normal)
-  if (AppState.activeCategory === 'marca') {
-    list = list.filter(p => p.subcategoria_grupo === 'Marca' || p.subcategoria_grupo === 'Marcas');
-  } else if (AppState.activeCategory === 'normal') {
-    list = list.filter(p => p.subcategoria_grupo === 'Normal');
+  // 1. Filtro por categoría principal
+  if (AppState.activeCategory && AppState.activeCategory !== 'all') {
+    list = list.filter(p => p.categoria_slug === AppState.activeCategory);
   }
 
-  // 2. Filtro por subcategoría específica
+  // 2. Filtro por subcategoría específica (Dama, Caballeros, Niños)
   if (AppState.activeSubcategorySlug) {
     list = list.filter(p => p.subcategoria_slug === AppState.activeSubcategorySlug);
   }
 
-  // 3. Filtro por búsqueda (Título, descripción, subcategoría y código)
+  // 3. Filtro por búsqueda (Título, descripción, código, categoría y subcategoría)
   if (AppState.searchQuery) {
-    const q = AppState.searchQuery;
+    const q = AppState.searchQuery.toLowerCase();
     list = list.filter(p => {
       const matchTitle = p.title && p.title.toLowerCase().includes(q);
       const matchDesc = p.description && p.description.toLowerCase().includes(q);
+      const matchCat = p.categoria_name && p.categoria_name.toLowerCase().includes(q);
       const matchSub = p.subcategoria_name && p.subcategoria_name.toLowerCase().includes(q);
       const matchCode = p.code && p.code.toLowerCase().includes(q);
-      return matchTitle || matchDesc || matchSub || matchCode;
+      return matchTitle || matchDesc || matchCat || matchSub || matchCode;
     });
   }
 
@@ -379,12 +404,20 @@ function updateFilterBreadcrumbs() {
   const btnClearFilters = document.getElementById('btnClearAllFilters');
 
   let text = 'Mostrando: <strong>';
-  if (AppState.activeCategory === 'marca') text += 'Stock de Marca';
-  else if (AppState.activeCategory === 'normal') text += 'Stock Normal';
-  else text += 'Todo el Stock';
+  const foundCat = AppState.categories.find(c => c.slug === AppState.activeCategory);
+  if (foundCat) {
+    text += foundCat.name;
+  } else {
+    text += 'Todo el Stock';
+  }
 
   if (AppState.activeSubcategorySlug) {
-    text += ` &bull; ${AppState.activeSubcategorySlug.replace(/-/g, ' ')}`;
+    const currentCat = AppState.categories.find(c => c.slug === AppState.activeCategory);
+    const foundSubcat = currentCat && currentCat.subcategories
+      ? currentCat.subcategories.find(sc => sc.slug === AppState.activeSubcategorySlug)
+      : null;
+    const subName = foundSubcat ? foundSubcat.name : AppState.activeSubcategorySlug.replace(/-/g, ' ');
+    text += ` &bull; ${subName}`;
   }
 
   if (AppState.searchQuery) {
@@ -476,10 +509,10 @@ function renderProductsGrid(products) {
         </div>
         <div class="card-body">
           <div class="card-category-row">
-            <span class="card-category-tag">${escapeHtml(p.categoria_name)} &bull; ${escapeHtml(p.subcategoria_name)}</span>
+            <span class="card-category-tag">${p.subcategoria_name ? `${escapeHtml(p.categoria_name)} &bull; ${escapeHtml(p.subcategoria_name)}` : escapeHtml(p.categoria_name)}</span>
             ${codeTagHtml}
           </div>
-          <h3 class="card-title">${(p.title && p.title !== 'Prenda' && p.title !== ',') ? escapeHtml(p.title) : (p.code ? `Prenda ${escapeHtml(p.code)}` : escapeHtml(p.subcategoria_name))}</h3>
+          <h3 class="card-title">${(p.title && p.title !== 'Prenda' && p.title !== 'Producto' && p.title !== ',') ? escapeHtml(p.title) : (p.code ? `Producto ${escapeHtml(p.code)}` : (p.subcategoria_name ? escapeHtml(p.subcategoria_name) : escapeHtml(p.categoria_name)))}</h3>
           <p class="card-description">${escapeHtml(p.description || '')}</p>
           
           ${sizesHtml}
@@ -597,11 +630,13 @@ function openProductDetail(productId) {
     codeTag.classList.add('hidden');
   }
 
-  document.getElementById('detailCategoryTag').textContent = `${product.categoria_name} • ${product.subcategoria_name}`;
+  document.getElementById('detailCategoryTag').textContent = product.subcategoria_name 
+    ? `${product.categoria_name} • ${product.subcategoria_name}` 
+    : product.categoria_name;
   
-  const displayTitle = (product.title && product.title !== 'Prenda' && product.title !== ',') 
+  const displayTitle = (product.title && product.title !== 'Prenda' && product.title !== 'Producto' && product.title !== ',') 
     ? product.title 
-    : (product.code ? `Prenda ${product.code}` : product.subcategoria_name);
+    : (product.code ? `Producto ${product.code}` : (product.subcategoria_name || product.categoria_name));
   document.getElementById('detailTitle').textContent = displayTitle;
 
   const priceBox = document.querySelector('.detail-price-box');
