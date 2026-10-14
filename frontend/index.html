@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CATÁLOGO LIQUIDACIÓN STOCK</title>
-  <meta name="description" content="CATÁLOGO LIQUIDACIÓN STOCK - Catálogo exclusivo de productos en liquidación, stock seleccionado y ofertas con sincronización en tiempo real.">
+  <title>CATALOGO CALZADO DAMA</title>
+  <meta name="description" content="CATALOGO CALZADO DAMA - Catálogo exclusivo de calzado femenino, sandalias, tacones y zapatillas para damas con sincronización en tiempo real.">
   
   <!-- Tipografía moderna Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -145,21 +145,21 @@
         <span class="cat-tab-icon">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
         </span>
-        <span>Todo el Calzado</span>
+        <span>Todo el Stock</span>
       </button>
 
       <button class="cat-tab" data-category="marca" id="tabCategoryMarca">
         <span class="cat-tab-icon">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
         </span>
-        <span>Calzado de Marca</span>
+        <span>Stock de Marca</span>
       </button>
 
       <button class="cat-tab" data-category="normal" id="tabCategoryNormal">
         <span class="cat-tab-icon">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10a2 2 0 002 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"/></svg>
         </span>
-        <span>Calzado Normal</span>
+        <span>Stock Normal</span>
       </button>
     </nav>
 
@@ -262,28 +262,32 @@
         </div>
 
         <div class="form-group" id="passwordGroup">
-          <label for="loginPasswordInput">Contraseña</label>
-          <input 
-            type="password" 
-            id="loginPasswordInput" 
-            placeholder="Introduce tu contraseña..." 
-            autocomplete="current-password"
-          >
-          <span class="field-hint" id="passwordHint">Requerida para Administrador (Opcional para Clientes).</span>
+          <label for="loginPasswordInput">Contraseña de Administrador</label>
+          <div style="position: relative; display: flex; align-items: center;">
+            <input 
+              type="password" 
+              id="loginPasswordInput" 
+              placeholder="Introduce tu contraseña..." 
+              autocomplete="current-password"
+              style="width: 100%; padding-right: 40px;"
+            >
+            <button type="button" id="btnTogglePasswordVisibility" style="position: absolute; right: 8px; background: none; border: none; cursor: pointer; font-size: 16px; opacity: 0.7;" title="Mostrar / Ocultar clave">👁️</button>
+          </div>
+          <span class="field-hint" id="passwordHint">Obligatoria para Administrador: <strong>PATTYpschincha452416</strong></span>
         </div>
 
         <!-- Banner Informativo -->
         <div class="role-notice-box" id="roleNoticeBox">
-          <div class="notice-icon">🔒</div>
+          <div class="notice-icon">👑</div>
           <div class="notice-text">
-            <strong>Acceso Administrador:</strong> Selecciona la pestaña <em>Modo Administrador</em> para gestionar el catálogo.
+            <strong>Credenciales Administrador:</strong> Usuario: <code>PATTYps</code> &nbsp;|&nbsp; Clave: <code>PATTYpschincha452416</code>
           </div>
         </div>
 
-        <!-- Botón para rellenar rápido credenciales de Admin en pruebas -->
+        <!-- Botón para rellenar rápido credenciales de Admin -->
         <div class="quick-admin-fill">
-          <button type="button" class="btn-link-action" id="btnFillAdminCredentials">
-            🔑 Autocompletar datos de Administrador
+          <button type="button" class="btn btn-fucsia" style="width: 100%; padding: 10px; margin-bottom: 12px; font-weight: 600;" id="btnFillAdminCredentials">
+            ⚡ Autocompletar e Iniciar como Admin
           </button>
         </div>
 

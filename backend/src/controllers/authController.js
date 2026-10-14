@@ -1,39 +1,54 @@
 const UserModel = require('../models/userModel');
 const { generateToken } = require('../middlewares/authMiddleware');
+const db = require('../config/database');
 
-const ADMIN_USERNAME = process.env.ADMIN_USER || 'PATTYps';
-const ADMIN_PASSWORD = process.env.ADMIN_PASS || 'PATTYpschincha452416';
+const cleanStr = (val) => (val ? String(val).trim().replace(/^["']|["']$/g, '') : '');
+const ADMIN_USERNAME = cleanStr(process.env.ADMIN_USER) || 'PATTYps';
+const ADMIN_PASSWORD = cleanStr(process.env.ADMIN_PASS) || 'PATTYpschincha452416';
 
 const AuthController = {
   // Proceso de Login con verificación estricta de roles
   login(req, res) {
     try {
-      let { username, password } = req.body;
+      let { username, password, mode } = req.body;
 
       username = (username || '').trim();
       password = (password || '').trim();
+      const loginMode = (mode || '').trim().toLowerCase();
 
-      // Si no envía nombre de usuario, asignarle un nombre de cliente amigable
-      if (!username) {
-        username = `Cliente_${Math.floor(100 + Math.random() * 900)}`;
+      // Comparación flexible de clave y usuario admin
+      const isMatchAdminPass = password && (password === ADMIN_PASSWORD || password.toLowerCase() === ADMIN_PASSWORD.toLowerCase());
+      const isTargetingAdmin = loginMode === 'admin' ||
+                               username.toLowerCase() === ADMIN_USERNAME.toLowerCase() ||
+                               username.toLowerCase() === 'admin';
+
+      // 1. Si el usuario intenta identificarse como Administrador
+      if (isTargetingAdmin) {
+        if (!password) {
+          return res.status(400).json({
+            success: false,
+            error: 'Debes ingresar la contraseña de Administrador.'
+          });
+        }
+        if (!isMatchAdminPass) {
+          return res.status(401).json({
+            success: false,
+            error: 'Contraseña de Administrador incorrecta. Por favor verifica la clave.'
+          });
+        }
       }
 
       let assignedRole = 'cliente';
       let finalUsername = username;
 
-      // REGLA ESTRICTA DE ROL ADMIN:
-      // Nombre PATTYps (insensible a mayúsculas/minúsculas) y clave exacta PATTYpschincha452416
-      const isMatchAdminUser = username.toLowerCase() === ADMIN_USERNAME.toLowerCase();
-      const isMatchAdminPass = password === ADMIN_PASSWORD;
-
-      if (isMatchAdminUser && isMatchAdminPass) {
+      // Si la clave coincide con la de Administrador (o ingresó con usuario y clave correctas)
+      if (isMatchAdminPass) {
         assignedRole = 'admin';
         finalUsername = ADMIN_USERNAME;
       } else {
-        // Por seguridad, cualquier otra combinación se cataloga automáticamente como Rol Cliente
         assignedRole = 'cliente';
-        if (isMatchAdminUser && !isMatchAdminPass) {
-          finalUsername = `Cliente_${ADMIN_USERNAME}_invitado`;
+        if (!finalUsername) {
+          finalUsername = `Cliente_${Math.floor(100 + Math.random() * 900)}`;
         }
       }
 
@@ -48,8 +63,10 @@ const AuthController = {
           password_hash: assignedRole === 'admin' ? ADMIN_PASSWORD : null,
           role_id: roleId
         });
-      } else if (user.role_name !== assignedRole && assignedRole === 'admin') {
-        // En caso de que se haya reasignado
+      } else if (assignedRole === 'admin') {
+        // Asegurar que en la base de datos tenga rol admin id 1
+        db.run('UPDATE usuarios SET role_id = 1 WHERE id = ?', [user.id]);
+        user.role_id = 1;
         user.role_name = 'admin';
       }
 

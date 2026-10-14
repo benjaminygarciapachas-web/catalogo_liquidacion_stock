@@ -169,14 +169,15 @@ function initEventListeners() {
       if (usernameInput.value === 'PATTYps') {
         usernameInput.value = '';
       }
+      passwordInput.value = '';
     });
 
     tabLoginAdmin.addEventListener('click', () => {
       tabLoginAdmin.classList.add('active');
       tabLoginCliente.classList.remove('active');
       usernameInput.placeholder = 'Usuario de Administrador';
-      // Autocompletar el campo con PATTYps para que nunca quede vacío ni confunda
       usernameInput.value = 'PATTYps';
+      passwordInput.value = 'PATTYpschincha452416';
       if (passwordInput) passwordInput.focus();
     });
   }
@@ -190,6 +191,17 @@ function initEventListeners() {
       tabLoginAdmin.classList.add('active');
       tabLoginCliente.classList.remove('active');
       usernameInput.placeholder = 'Usuario de Administrador';
+      handleLoginSubmit(new Event('submit'));
+    });
+  }
+
+  // Toggle para ver / ocultar contraseña
+  const btnToggleVisibility = document.getElementById('btnTogglePasswordVisibility');
+  if (btnToggleVisibility && passwordInput) {
+    btnToggleVisibility.addEventListener('click', () => {
+      const isPass = passwordInput.type === 'password';
+      passwordInput.type = isPass ? 'text' : 'password';
+      btnToggleVisibility.textContent = isPass ? '🙈' : '👁️';
     });
   }
 
@@ -367,9 +379,9 @@ function updateFilterBreadcrumbs() {
   const btnClearFilters = document.getElementById('btnClearAllFilters');
 
   let text = 'Mostrando: <strong>';
-  if (AppState.activeCategory === 'marca') text += 'Productos de Marca';
-  else if (AppState.activeCategory === 'normal') text += 'Productos Normales';
-  else text += 'Todo el Catálogo';
+  if (AppState.activeCategory === 'marca') text += 'Stock de Marca';
+  else if (AppState.activeCategory === 'normal') text += 'Stock Normal';
+  else text += 'Todo el Stock';
 
   if (AppState.activeSubcategorySlug) {
     text += ` &bull; ${AppState.activeSubcategorySlug.replace(/-/g, ' ')}`;
@@ -641,13 +653,21 @@ async function handleLoginSubmit(e) {
   const tabLoginAdmin = document.getElementById('tabLoginAdmin');
   const submitBtn = document.getElementById('submitLoginBtnText') || document.getElementById('btnSubmitLogin');
 
+  const isAdminMode = tabLoginAdmin && tabLoginAdmin.classList.contains('active');
   let username = (usernameInput ? usernameInput.value : '').trim();
   const password = (passwordInput ? passwordInput.value : '').trim();
 
   // Si está en Modo Administrador y el usuario está vacío, asignar PATTYps automáticamente
-  if (tabLoginAdmin && tabLoginAdmin.classList.contains('active') && !username) {
-    username = 'PATTYps';
-    if (usernameInput) usernameInput.value = 'PATTYps';
+  if (isAdminMode) {
+    if (!username) {
+      username = 'PATTYps';
+      if (usernameInput) usernameInput.value = 'PATTYps';
+    }
+    if (!password) {
+      alert('Por favor ingresa la contraseña de Administrador.');
+      if (passwordInput) passwordInput.focus();
+      return;
+    }
   }
 
   const originalText = submitBtn ? submitBtn.textContent : 'Ingresar al Catálogo';
@@ -657,13 +677,21 @@ async function handleLoginSubmit(e) {
     const response = await fetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password })
+      body: JSON.stringify({
+        username,
+        password,
+        mode: isAdminMode ? 'admin' : 'cliente'
+      })
     });
 
     const data = await response.json();
 
     if (!response.ok || !data.success) {
       throw new Error(data.error || 'Error al iniciar sesión.');
+    }
+
+    if (isAdminMode && data.role !== 'admin') {
+      throw new Error('No se concedieron privilegios de Administrador. Verifica la clave ingresada.');
     }
 
     // Guardar usuario autenticado
