@@ -169,19 +169,13 @@ function initEventListeners() {
     tabLoginCliente.addEventListener('click', () => {
       tabLoginCliente.classList.add('active');
       tabLoginAdmin.classList.remove('active');
-      usernameInput.placeholder = 'Tu nombre de usuario';
-      usernameInput.value = '';
-      passwordInput.value = '';
-      if (usernameInput) usernameInput.focus();
+      if (usernameInput) usernameInput.placeholder = 'Tu nombre de usuario';
     });
 
     tabLoginAdmin.addEventListener('click', () => {
       tabLoginAdmin.classList.add('active');
       tabLoginCliente.classList.remove('active');
-      usernameInput.placeholder = 'Usuario de Administrador';
-      usernameInput.value = '';
-      passwordInput.value = '';
-      if (usernameInput) usernameInput.focus();
+      if (usernameInput) usernameInput.placeholder = 'Usuario de Administrador (PATTYps)';
     });
   }
 
@@ -662,12 +656,18 @@ function openProductDetail(productId) {
 // ==========================================================================
 function openLoginModal() {
   const modal = document.getElementById('loginModalOverlay');
+  const tabLoginAdmin = document.getElementById('tabLoginAdmin');
+  const tabLoginCliente = document.getElementById('tabLoginCliente');
+  if (tabLoginAdmin && tabLoginCliente) {
+    tabLoginAdmin.classList.add('active');
+    tabLoginCliente.classList.remove('active');
+  }
   if (modal) {
     modal.classList.remove('hidden');
     const usernameInput = document.getElementById('loginUsernameInput');
     const passwordInput = document.getElementById('loginPasswordInput');
-    if (usernameInput) usernameInput.value = '';
-    if (passwordInput) passwordInput.value = '';
+    if (usernameInput) usernameInput.placeholder = 'Usuario: PATTYps (o tu nombre)';
+    if (passwordInput) passwordInput.focus();
   }
 }
 
