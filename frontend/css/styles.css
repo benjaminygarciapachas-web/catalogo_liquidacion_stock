@@ -2513,3 +2513,12 @@ body {
     font-size: 0.74rem;
   }
 }
+
+
+/* Eliminar permanentemente insignias de estado y cliente en l?nea */
+.live-status-badge, .user-profile-pill {
+  display: none !important;
+}
+.nav-actions {
+  margin-left: auto !important;
+}
