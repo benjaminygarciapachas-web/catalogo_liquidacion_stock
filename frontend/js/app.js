@@ -52,21 +52,25 @@ function updateUserUI() {
   const loginBtnText = document.getElementById('loginBtnText');
 
   if (user) {
-    nameLabel.textContent = user.username;
-    if (user.role === 'admin') {
-      roleBadge.textContent = 'Admin';
-      roleBadge.className = 'user-role-badge badge-admin';
-    } else {
+    if (nameLabel) nameLabel.textContent = user.username;
+    if (roleBadge) {
+      if (user.role === 'admin') {
+        roleBadge.textContent = 'Admin';
+        roleBadge.className = 'user-role-badge badge-admin';
+      } else {
+        roleBadge.textContent = 'Cliente';
+        roleBadge.className = 'user-role-badge badge-cliente';
+      }
+    }
+    if (loginBtnText) loginBtnText.textContent = 'Cerrar Sesión';
+    AdminModule.updateAdminUIState(user.role === 'admin');
+  } else {
+    if (nameLabel) nameLabel.textContent = 'Invitado';
+    if (roleBadge) {
       roleBadge.textContent = 'Cliente';
       roleBadge.className = 'user-role-badge badge-cliente';
     }
-    loginBtnText.textContent = 'Cerrar Sesión';
-    AdminModule.updateAdminUIState(user.role === 'admin');
-  } else {
-    nameLabel.textContent = 'Invitado';
-    roleBadge.textContent = 'Cliente';
-    roleBadge.className = 'user-role-badge badge-cliente';
-    loginBtnText.textContent = 'Iniciar Sesión';
+    if (loginBtnText) loginBtnText.textContent = 'Iniciar Sesión';
     AdminModule.updateAdminUIState(false);
   }
 }
