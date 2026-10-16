@@ -4,12 +4,16 @@
   "description": "CATALOGO LIQUIDACION STOCK - Fullstack Application",
   "main": "backend/index.js",
   "license": "MIT",
+  "engines": {
+    "node": ">=22.5.0"
+  },
   "scripts": {
     "build": "cd backend && npm install && node seed.mjs",
     "start": "node backend/index.js",
     "seed": "node backend/seed.mjs"
   },
   "dependencies": {
+    "cloudinary": "^2.11.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.0",

@@ -6,6 +6,8 @@ services:
     buildCommand: npm install && cd backend && npm install && node seed.mjs
     startCommand: node backend/index.js
     envVars:
+      - key: NODE_VERSION
+        value: 22
       - key: NODE_ENV
         value: production
       - key: ADMIN_USER

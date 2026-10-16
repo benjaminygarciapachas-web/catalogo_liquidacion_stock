@@ -5,6 +5,9 @@
   "main": "index.js",
   "type": "commonjs",
   "license": "MIT",
+  "engines": {
+    "node": ">=22.5.0"
+  },
   "scripts": {
     "start": "node index.js",
     "seed": "node seed.mjs"
